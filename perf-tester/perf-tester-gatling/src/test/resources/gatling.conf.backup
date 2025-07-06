@@ -1,0 +1,48 @@
+#########################
+# Gatling Configuration #
+#########################
+
+gatling {
+  core {
+    outputDirectoryBaseName = "results"
+    runDescription = "LLM Mock Server Performance Test"
+    encoding = "utf-8"
+    elFileBodiesCacheMaxCapacity = 200
+    rawFileBodiesCacheMaxCapacity = 200
+    jsonFeeder {
+      bufferSize = 200
+    }
+    ssl {
+      useOpenSsl = true
+      handshakeTimeout = 10000
+      useInsecureTrustManager = true
+      enabledProtocols = [TLSv1.2, TLSv1.3]
+    }
+  }
+  socket {
+    connectTimeout = 10000
+    tcpNoDelay = true
+    soKeepAlive = true
+  }
+  netty {
+    useNativeTransport = true
+    usePooledMemory = true
+  }
+  charting {
+    indicators {
+      lowerBound = 100
+      higherBound = 500
+    }
+  }
+  http {
+    ahc {
+      connectTimeout = 10000
+      handshakeTimeout = 10000
+      requestTimeout = 60000
+      keepAlive = true
+      pooledConnectionIdleTimeout = 60000
+      maxConnectionsPerHost = 100
+      maxConnections = 1000
+    }
+  }
+} 
