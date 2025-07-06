@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: llm-web-server-tomcat
+
+server:
+  port: 9090
