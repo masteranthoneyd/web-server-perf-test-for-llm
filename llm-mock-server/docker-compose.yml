@@ -1,15 +1,14 @@
 version: '3.8'
 
 services:
-  # 1核1G配置 - 高密度部署场景
   llm-mock-1c1g:
     image: llm-mock-server:latest
     container_name: llm-mock-1c1g
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
-      - MAX_CONCURRENT=10000      # 1G内存约能支持1500并发
-      - WORKER_THREADS=2         # 1核用2个工作线程
+      - MAX_CONCURRENT=10000
+      - WORKER_THREADS=2
       - RESPONSE_DELAY_SECONDS=10
       - PORT=8080
     ulimits:
@@ -19,32 +18,31 @@ services:
     sysctls:
       net.core.somaxconn: 65535
       net.ipv4.tcp_max_syn_backlog: 65535
-      net.ipv4.ip_local_port_range: "1024 65535"
+      net.ipv4.ip_local_port_range: "10001 65535"
     deploy:
       resources:
         limits:
-          cpus: '1.0'           # 限制1核
-          memory: 1G            # 限制1G内存
+          cpus: '1.0'
+          memory: 1G
         reservations:
-          cpus: '0.5'           # 预留0.5核
-          memory: 512M          # 预留512M内存
+          cpus: '0.5'
+          memory: 512M
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     restart: unless-stopped
 
-  # 2核2G配置 - 标准部署场景
   llm-mock-2c2g:
     image: llm-mock-server:latest
     container_name: llm-mock-2c2g
     ports:
-      - "8080:8080"
+      - "8082:8080"
     environment:
-      - MAX_CONCURRENT=30000      # 2G内存约能支持3000并发
-      - WORKER_THREADS=4         # 2核用3个工作线程
+      - MAX_CONCURRENT=30000
+      - WORKER_THREADS=4
       - RESPONSE_DELAY_SECONDS=10
       - PORT=8080
     ulimits:
@@ -54,40 +52,22 @@ services:
     sysctls:
       net.core.somaxconn: 65535
       net.ipv4.tcp_max_syn_backlog: 65535
-      net.ipv4.ip_local_port_range: "1024 65535"
+      net.ipv4.ip_local_port_range: "10001 65535"
     deploy:
       resources:
         limits:
-          cpus: '2.0'           # 限制2核
-          memory: 2G            # 限制2G内存
+          cpus: '2.0'
+          memory: 2G
         reservations:
-          cpus: '1.0'           # 预留1核
-          memory: 1G            # 预留1G内存
+          cpus: '1.0'
+          memory: 1G
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     restart: unless-stopped
-
-  # 监控服务（可选）
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: llm-mock-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    restart: unless-stopped
-    profiles:
-      - monitoring
 
 networks:
   default:

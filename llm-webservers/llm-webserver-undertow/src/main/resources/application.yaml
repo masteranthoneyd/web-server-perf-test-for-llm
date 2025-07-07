@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: llm-web-server-undertow
+
+server:
+  undertow:
+    threads:
+      io: 4
+      worker: 200
+  port: 9091

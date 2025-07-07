@@ -59,6 +59,9 @@ cargo run
 
 # 自定义配置
 MAX_CONCURRENT=2000 WORKER_THREADS=2 cargo run
+
+# 编译
+cargo build --release
 ```
 
 ### Docker部署
@@ -68,13 +71,10 @@ MAX_CONCURRENT=2000 WORKER_THREADS=2 cargo run
 docker build -t llm-mock-server .
 
 # 运行1核1G配置
-docker-compose up llm-mock-1c1g
+docker compose up -d llm-mock-1c1g
 
 # 运行2核2G配置  
-docker-compose up llm-mock-2c2g
-
-# 同时运行两个配置
-docker-compose up
+docker compose up -d llm-mock-2c2g
 ```
 
 ## 🔧 配置参数
