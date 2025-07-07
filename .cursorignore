@@ -1,5 +1,6 @@
-/target/
+**/target/
 /.idea/
 /.git/
 *.rs.bk
 Cargo.lock
+**/gatling-report/

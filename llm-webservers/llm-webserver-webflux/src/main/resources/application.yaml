@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: llm-web-server-webflux
+
+server:
+  port: 9070

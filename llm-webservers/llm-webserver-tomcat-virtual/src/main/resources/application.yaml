@@ -1,6 +1,9 @@
 spring:
   application:
     name: llm-web-server-tomcat
+  threads:
+    virtual:
+      enabled: true
 
 server:
-  port: 9080
+  port: 9081
