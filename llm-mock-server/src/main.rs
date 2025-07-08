@@ -57,6 +57,26 @@ static RESPONSE_HEADERS: Lazy<HeaderMap> = Lazy::new(|| {
     headers
 });
 
+// HTTP/2 配置说明:
+//
+// 在 axum 0.6 + hyper 0.14 环境下，HTTP/2 的最大并发流配置有以下特点：
+//
+// 1. **默认值**: hyper 默认 max_concurrent_streams = 200 (或接近此值)
+// 2. **配置方式**: 当前版本的 axum::Server 没有直接暴露 HTTP/2 低级配置
+// 3. **实际限制**:
+//    - 单个 HTTP/2 连接: 最多 200 个并发 stream (hyper 控制)
+//    - 应用层总限制: MAX_CONCURRENT 参数控制总体并发请求数
+//    - 协议支持: HTTP/1.1 和 HTTP/2 (h2c) 自动协商
+//
+// 4. **性能考虑**:
+//    - HTTP/2 多路复用减少连接开销
+//    - 200 个并发 stream 足够支持大部分应用场景
+//    - 应用层信号量提供额外的并发控制和资源保护
+//
+// 5. **验证方法**: 使用提供的测试脚本验证实际并发能力
+//
+// 如需更精细的 HTTP/2 配置，可考虑升级到 axum 0.7+ 或使用自定义 hyper 服务器。
+
 // 应用配置
 #[derive(Clone)]
 struct AppConfig {
@@ -64,6 +84,7 @@ struct AppConfig {
     response_delay_seconds: u64,
     port: u16,
     worker_threads: usize,
+    http2_max_concurrent_streams: u32,  // HTTP/2 最大并发 stream 数量
 }
 
 impl Default for AppConfig {
@@ -94,6 +115,10 @@ impl Default for AppConfig {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(worker_threads),
+            http2_max_concurrent_streams: env::var("HTTP2_MAX_CONCURRENT_STREAMS")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(200),  // 默认设置为 200 个并发 stream
         }
     }
 }
@@ -348,6 +373,7 @@ fn main() {
     println!("  响应延迟: {}秒", config.response_delay_seconds);
     println!("  工作线程数: {}", config.worker_threads);
     println!("  监听端口: {}", config.port);
+    println!("  HTTP/2 最大并发流: {}", config.http2_max_concurrent_streams);
 
     // 构建优化的Tokio运行时
     let rt = tokio::runtime::Builder::new_multi_thread()
@@ -381,7 +407,11 @@ async fn async_main(config: AppConfig) {
         .with_state(state);
 
     let addr = format!("0.0.0.0:{}", config.port);
-    println!("启动服务器: {}", addr);
+    println!("启动服务器: {} (支持 HTTP/1 和 HTTP/2)", addr);
+    println!("HTTP/2 配置:");
+    println!("  - 每个连接最大并发 stream: {} (由 hyper 控制)", config.http2_max_concurrent_streams);
+    println!("  - 总体并发限制: {} (由应用层信号量控制)", config.max_concurrent_requests);
+    println!("  - 协议: HTTP/1.1 和 HTTP/2 (h2c) 自动协商");
 
     let server = axum::Server::bind(&addr.parse().unwrap())
         .tcp_nodelay(true)

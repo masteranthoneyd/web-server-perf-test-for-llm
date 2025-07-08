@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+ENV TOKIO_SOCKET_BACKLOG=32768
+
 # 直接复制已编译的二进制文件
 COPY target/release/llm-mock-server .
 

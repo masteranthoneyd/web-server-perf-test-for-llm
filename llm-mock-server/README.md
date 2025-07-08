@@ -60,7 +60,7 @@ cargo run
 # 自定义配置
 MAX_CONCURRENT=2000 WORKER_THREADS=2 cargo run
 
-# 编译
+# 构建
 cargo build --release
 ```
 
