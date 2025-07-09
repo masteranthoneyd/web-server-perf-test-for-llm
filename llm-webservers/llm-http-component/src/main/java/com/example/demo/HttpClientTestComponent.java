@@ -20,20 +20,48 @@ public class HttpClientTestComponent {
     private RestClient.Builder builder;
 
     public void test() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1001; i++) {
             Thread.startVirtualThread(new Runnable() {
                 @Override
                 public void run() {
-                    callLlmMApiock();
+//                    callLlmMockApi();
+                    callLlmRealApi();
                 }
             });
         }
+//        callLlmRealApi();
     }
 
-    private void callLlmMApiock() {
+    private void callLlmMockApi() {
         ResponseEntity<OpenAiApi.ChatCompletion> entity = builder.build().post()
                 .uri("http://10.5.148.136:8080/compatible-mode/v1/chat/completions")
 //                .body(chatRequest)
+                .retrieve()
+                .toEntity(OpenAiApi.ChatCompletion.class);
+        log.info("result: {}", entity.getBody());
+    }
+
+    private void callLlmRealApi() {
+        String body = """
+                {
+                    "model": "qwen-max",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are a helpful assistant."
+                        },
+                        {
+                            "role": "user",
+                            "content": "给出一份制作意大利面的操作流程"
+                        }
+                    ]
+                }
+                """;
+        ResponseEntity<OpenAiApi.ChatCompletion> entity = builder.build().post()
+                .uri("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")
+                .body(body)
+                .header("Authorization", "Bearer ***")
+                .header("Content-Type", "application/json")
                 .retrieve()
                 .toEntity(OpenAiApi.ChatCompletion.class);
         log.info("result: {}", entity.getBody());
