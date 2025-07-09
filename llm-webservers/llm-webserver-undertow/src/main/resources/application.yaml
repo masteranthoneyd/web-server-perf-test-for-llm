@@ -1,10 +1,13 @@
 spring:
   application:
     name: llm-web-server-undertow
+#  threads:
+#    virtual:
+#      enabled: true
 
 server:
-  undertow:
-    threads:
-      io: 4
-      worker: 200
+#  undertow:
+#    threads:
+#      io: 2
+#      worker: 2000
   port: 9090

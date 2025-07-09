@@ -10,7 +10,8 @@ import scala.concurrent.duration._
 class LlmMockServerSimulation extends Simulation {
 
   val httpProtocol: HttpProtocolBuilder = http
-    .baseUrl("http://127.0.0.1:9091/")
+    .baseUrl("http://127.0.0.1:9070/")
+//    .baseUrl("http://10.5.148.136:8080/")
     .acceptHeader("application/json")
     .contentTypeHeader("application/json")
     .userAgentHeader("Gatling Performance Test")

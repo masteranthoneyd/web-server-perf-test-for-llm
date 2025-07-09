@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: llm-http-component
+
+server:
+  port: 8070
