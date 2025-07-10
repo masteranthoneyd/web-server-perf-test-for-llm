@@ -10,4 +10,4 @@ server:
 #  tomcat:
 #    threads:
 #      max: 2000
-  port: 9080
+  port: 9090

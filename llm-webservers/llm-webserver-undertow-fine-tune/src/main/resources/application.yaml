@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: llm-web-server-undertow-fine-tune
+
+server:
+  undertow:
+    threads:
+      io: 2
+      worker: 20
+  #      worker: 2000
+  port: 9080
