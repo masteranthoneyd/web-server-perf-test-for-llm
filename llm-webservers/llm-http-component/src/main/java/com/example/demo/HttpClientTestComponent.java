@@ -20,16 +20,18 @@ public class HttpClientTestComponent {
     private RestClient.Builder builder;
 
     public void test() {
-        for (int i = 0; i < 1001; i++) {
+//        callLlmRealApi();
+        for (int i = 0; i < 5000; i++) {
             Thread.startVirtualThread(new Runnable() {
                 @Override
                 public void run() {
-//                    callLlmMockApi();
-                    callLlmRealApi();
+                    callLlmMockApi();
+//                    callLlmRealApi();
                 }
             });
         }
 //        callLlmRealApi();
+//        callLlmMockApi();
     }
 
     private void callLlmMockApi() {
@@ -44,7 +46,7 @@ public class HttpClientTestComponent {
     private void callLlmRealApi() {
         String body = """
                 {
-                    "model": "qwen-max",
+                    "model": "qwen-plus",
                     "messages": [
                         {
                             "role": "system",
