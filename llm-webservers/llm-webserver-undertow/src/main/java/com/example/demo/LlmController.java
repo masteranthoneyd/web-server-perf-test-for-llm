@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 /**
  * @author yangbingdong1994@gmail.com
@@ -48,5 +49,15 @@ public class LlmController {
     public String chatCompletion() {
         llmService.think();
         return resp;
+    }
+
+    @PostMapping("/compatible-mode/v2/chat/completions")
+    public DeferredResult<String> chatCompletionV2() {
+        DeferredResult<String> deferredResult = new DeferredResult<>();
+        Thread.startVirtualThread(() -> {
+            llmService.think();
+            deferredResult.setResult(resp);
+        });
+        return deferredResult;
     }
 }

@@ -6,8 +6,8 @@ spring:
 #      enabled: true
 
 server:
-#  undertow:
-#    threads:
-#      io: 2
-#      worker: 2000
+  undertow:
+    threads:
+      io: 4
+      worker: 8
   port: 9080

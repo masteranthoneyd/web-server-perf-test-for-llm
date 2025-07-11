@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.function.Supplier;
+
 /**
  * @author yangbingdong1994@gmail.com
  */
@@ -53,11 +55,18 @@ public class LlmController {
 
     @PostMapping("/compatible-mode/v2/chat/completions")
     public DeferredResult<String> chatCompletionV2() {
-        DeferredResult<String> result = new DeferredResult<>();
-        Thread.startVirtualThread(() -> {
+        return wrapDeferredResult(() -> {
             llmService.callLlm();
-            result.setResult(resp);
+            return resp;
         });
-        return result;
+    }
+
+    public <T> DeferredResult<T> wrapDeferredResult(Supplier<T> supplier) {
+        DeferredResult<T> deferredResult = new DeferredResult<>();
+        Thread.startVirtualThread(() -> {
+            T t = supplier.get();
+            deferredResult.setResult(t);
+        });
+        return deferredResult;
     }
 }

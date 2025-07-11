@@ -23,10 +23,10 @@ public class LlmService {
 
     public void callLlm() {
         ResponseEntity<OpenAiApi.ChatCompletion> entity = builder.build().post()
-                .uri("http://127.0.0.1:8081/compatible-mode/v1/chat/completions")
+                .uri("http://10.5.148.136:8080/compatible-mode/v1/chat/completions")
                 .retrieve()
                 .toEntity(OpenAiApi.ChatCompletion.class);
-        log.info("result: {}", entity.getBody());
-        log.info("counter:{}", counter.incrementAndGet());
+//        log.info("result: {}", entity.getBody());
+//        log.info("counter:{}", counter.incrementAndGet());
     }
 }
